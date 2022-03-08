@@ -1,2 +1,2 @@
-# FEUP-BDNR
-Base de dados não relacionais
+# FEUP - Base de Dados Não Relacionais
+
