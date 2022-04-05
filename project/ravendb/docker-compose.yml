@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  ravendb:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "38888:38888"
+    volumes:
+      - /home/antonio/FEUP/4_ano/2_sem/BDNR/FEUP-BDNR/project/data:/opt/RavenDB/Server/RavenData
