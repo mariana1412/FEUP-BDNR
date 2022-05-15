@@ -3,3 +3,4 @@
 data_preparation/**/*.json
 **/node_modules/
 **/.env
+/ravendb/json
