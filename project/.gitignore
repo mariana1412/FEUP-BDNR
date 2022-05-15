@@ -1,1 +1,5 @@
 /data
+*.csv
+data_preparation/**/*.json
+**/node_modules/
+**/.env
