@@ -1,0 +1,43 @@
+/*************************** General ***************************/
+.main-button {
+    background-color: #1B4058;
+    border: none;
+}
+
+/*************************** Navbar ***************************/
+.navbar {
+    background-color: #1B4058;
+}
+
+/*************************** Search Bar ***************************/
+.search-page {
+    margin-left: 3em;
+    margin-right: 3em;
+}
+
+.searchbar-div {
+    background-color: #BAD7EC;
+    padding: 2em;
+    color: #1B4058;
+    font-weight: bold;
+    font-size: 17px;
+    border-radius: 5px;
+}
+
+/*************************** Filter Box ***************************/
+.filter-box {
+    color: #fff9f3;
+    width: 70%;
+    margin-bottom: 0.6em;
+}
+
+.filter-box-title, .filter-box-items {
+    background-color: #BAD7EC;
+    padding: 0.5em 1em 0.5em 1em;
+    margin: 0;
+}
+
+.filter-box-title {
+    margin-bottom: 0.2em;
+    cursor: pointer;
+}

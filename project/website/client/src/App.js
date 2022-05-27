@@ -1,17 +1,19 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter, Routes } from 'react-router-dom';
-import axios from 'axios';
+import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './style/style.css';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+
+import SearchPage from './pages/SearchPage';
+import Layout from './components/Layout';
 
 function App() {
-  useEffect(() => {
-    axios.get(`${process.env.REACT_APP_BACKEND_SERVER}/example/`).then(({ data }) => {
-      console.log(data);
-    });
-  }, []);
-
   return (
     <BrowserRouter>
-      <Routes />
+      <Routes>
+        <Route element={<Layout />}>
+          <Route exact path="/" element={<SearchPage />} />
+        </Route>
+      </Routes>
     </BrowserRouter>
   );
 }
