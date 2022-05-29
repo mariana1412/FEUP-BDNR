@@ -12,6 +12,9 @@ app.use(express.json())
 const product = require('./routes/product');
 app.use('/product', product);
 
+const purchases = require('./routes/purchases');
+app.use('/purchases', purchases)
+
 app.listen(port, () => console.log("Backend server live on " + port));
 
 module.exports = app;
