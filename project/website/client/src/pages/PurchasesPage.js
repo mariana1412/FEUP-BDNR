@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Form, Row } from 'react-bootstrap';
 import { useSearchParams } from 'react-router-dom';
+import PurchaseList from '../components/PurchaseList';
 
 export default function PurchasesPage() {
   const [searchParams] = useSearchParams();
@@ -11,7 +12,7 @@ export default function PurchasesPage() {
         <Form>
           <Form.Group className="mb-3">
             <Form.Label>I am a</Form.Label>
-            <Form.Select name="type">
+            <Form.Select name="type" defaultValue={searchParams.get('type')}>
               <option value="client">Client</option>
               <option value="shop">Shop</option>
               <option value="admin">Admin</option>
@@ -19,7 +20,7 @@ export default function PurchasesPage() {
           </Form.Group>
           <Form.Group className="mb-3" controlId="name">
             <Form.Label>Name</Form.Label>
-            <Form.Control name="name" />
+            <Form.Control name="name" defaultValue={searchParams.get('name')} />
           </Form.Group>
           <Button type="submit">
             Go
@@ -27,14 +28,7 @@ export default function PurchasesPage() {
         </Form>
       </Row>
       <Row>
-        {
-          searchParams.get('type') === null ? null
-            : (
-              <div>
-                { `Essa ${searchParams.get('type')} comprou bué `}
-              </div>
-            )
-        }
+        <PurchaseList type={searchParams.get('type')} name={searchParams.get('name')} />
       </Row>
     </div>
   );
