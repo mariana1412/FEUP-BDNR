@@ -10,7 +10,7 @@ export default function PurchasesPage() {
 
   const getPurchases = () => {
     console.log(name, type);
-    axios.get('http://localhost:3001/purchases/history', { type, name }).then(({ data }) => {
+    axios.get('http://localhost:3001/purchases/history', { params: { type, name } }).then(({ data }) => {
       setPurchases(data);
     }).catch((err) => {
       console.log(err);

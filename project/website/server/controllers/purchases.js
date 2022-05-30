@@ -1,9 +1,9 @@
 const { purchases, clients, products } = require("../config");
 
 async function getHistory(req, res){
-    const { name, type } = req.body
+    const { name, type } = req.query
     
-    console.log("Recived getHistory request");
+    console.log("Recived getHistory request", req.query);
     
     if (type === 'client') {
         const clients_session = clients.openSession()
@@ -13,12 +13,12 @@ async function getHistory(req, res){
             const client_query = await clients_session.advanced.rawQuery(`from "@all_docs" where name == "${name}" select id`).first()
             const client_id = client_query.id
             console.log(client_id)
-            const purchases_query = await purchases_session.query(purchases).whereEquals('client', client_id).all()
+            const purchases_query = await purchases_session.query(purchases).whereEquals('client', client_id).orderByDescending('date').all()
             console.log(purchases_query)
 
             for (let purchase in purchases_query) {
                 for (let product in purchases_query[purchase].products) {
-                    const product_query = await products_session.advanced.rawQuery(`from @all_docs where id == "${purchases_query[purchase].products[product]}" select name`).first()
+                    const product_query = await products_session.advanced.rawQuery(`from @all_docs where id == "${purchases_query[purchase].products[product]}"`).first()
                     purchases_query[purchase].products[product] = product_query
                 }
             }
