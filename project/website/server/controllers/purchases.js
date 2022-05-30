@@ -1,7 +1,9 @@
 const { purchases, clients, products } = require("../config");
 
 async function getHistory(req, res){
-    const { name, type } = req.query
+    const { name, type } = req.body
+    
+    console.log("Recived getHistory request");
     
     if (type === 'client') {
         const clients_session = clients.openSession()
@@ -27,7 +29,6 @@ async function getHistory(req, res){
             return res.status(404).send("No such client")
         }
     }
-
 }
 
 module.exports = {
