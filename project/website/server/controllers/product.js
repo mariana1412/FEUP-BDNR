@@ -10,6 +10,15 @@ async function getProducts(req, res) {
   return res.status(200).send(result);
 }
 
+async function getProduct(req, res) {
+  const {id} = req.params;
+  const session = products.openSession();
+  const result = await session.load(id);
+  if(result === null) return res.status(404).send(`Product ${id} not found.`);
+  return res.status(200).send(result);
+}
+
 module.exports = {
   getProducts,
+  getProduct
 };
