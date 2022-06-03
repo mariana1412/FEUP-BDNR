@@ -3,7 +3,7 @@ import {
   Row, Col, Form, Button,
 } from 'react-bootstrap';
 
-export default function SearchBar({ text, setText }) {
+export default function SearchBar({ text, setText, action }) {
   return (
     <Row className="searchbar-div d-flex align-items-center align-content-center justify-content-center g-0">
       <Col sm={3} className="text-center">
@@ -14,12 +14,12 @@ export default function SearchBar({ text, setText }) {
           type="text"
           className="search-bar"
           placeholder="Search"
-          onChange={(val) => setText(val)}
+          onChange={(event) => setText(event.target.value)}
           value={text}
         />
       </Col>
       <Col sm={1} className="d-flex justify-content-center">
-        <Button className="main-button">Search</Button>
+        <Button className="main-button" onClick={action}>Search</Button>
       </Col>
     </Row>
   );
