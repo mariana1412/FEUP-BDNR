@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navbar, Container } from 'react-bootstrap';
+import { Navbar, Container, Nav } from 'react-bootstrap';
 
 export default function NavBar() {
   return (
@@ -9,11 +9,12 @@ export default function NavBar() {
           <img src="/images/logo_without_background.png" width="90" alt="Logo" />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        {/* <Navbar.Collapse id="basic-navbar-nav">
+        <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="/search">Search</Nav.Link>
+            <Nav.Link href="/" className="text-white">Search</Nav.Link>
+            <Nav.Link href="/purchases" className="text-white">Purchases</Nav.Link>
           </Nav>
-        </Navbar.Collapse> */}
+        </Navbar.Collapse>
       </Container>
     </Navbar>
   );
