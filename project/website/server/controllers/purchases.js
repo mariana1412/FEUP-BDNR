@@ -1,45 +1,54 @@
-const { purchases, clients, products } = require("../config");
-
-async function getProducts(purchases_query) {
-    
-    for (let purchase in purchases_query) {
-        for (let product in purchases_query[purchase].products) {
-            const products_session = products.openSession()
-            const product_query = await products_session.advanced.rawQuery(`from @all_docs where id == "${purchases_query[purchase].products[product]}"`).first()
-            purchases_query[purchase].products[product] = product_query
-        }
-    }
-}
+const { store } = require("../config");
 
 async function getHistory(req, res){
-    const { name, type } = req.query
+    const { username, type, page, perPage } = req.query
     
     console.log("Recived getHistory request", req.query);
     
     if (type === 'client') {
-        const clients_session = clients.openSession()
-        const purchases_session = purchases.openSession()
+        const session = store.openSession()
+
         try {
-            const client_query = await clients_session.advanced.rawQuery(`from "@all_docs" where name == "${name}" select id`).first()
-            const client_id = client_query.id
-            console.log(client_id)
-            const purchases_query = await purchases_session.query(purchases).whereEquals('client', client_id).orderByDescending('date').all()
-            console.log(purchases_query)
+            const query = session.query({ indexName: 'purchasesByUsernameAndClientName' })
+                .whereEquals('username', username)
+                .orderByDescending('orderDate')
 
-            await getProducts(purchases_query)
+            const results = await query.skip(parseInt(page)).take(parseInt(perPage)).all()
 
-            return res.status(200).send(purchases_query)
+            return res.status(200).send(results)
         } catch (e) {
             console.log(e);
-            return res.status(404).send("No such client")
+            return res.status(500).send("Error in clients query")
+        }
+    } else if (type === 'store') {
+        const session = store.openSession()
+
+        try {
+            const query = session.query({ indexName: 'purchasesByStore' })
+                .whereEquals('store', username)
+                .orderByDescending('orderDate')
+
+            const results = await query.skip(parseInt(page)).take(parseInt(perPage)).all()
+
+            return res.status(200).send(results)
+        } catch (e) {
+            console.log(e);
+            return res.status(500).send("Error in store query")
         }
     } else if (type === 'admin') {
-        const purchases_session = purchases.openSession()
-        const purchases_query = await purchases_session.query(purchases).take(10).all()
+        const session = store.openSession()
 
-        await getProducts(purchases_query)
+        try {
+            const query = session.query({ collection: 'Purchases' })
+                .orderByDescending('orderDate')
 
-        return res.status(200).send(purchases_query)
+            const results = await query.skip(parseInt(page)).take(parseInt(perPage)).all()
+
+            return res.status(200).send(results)
+        } catch (e) {
+            console.log(e);
+            return res.status(500).send("Error in admin query")
+        }
     }
 }
 

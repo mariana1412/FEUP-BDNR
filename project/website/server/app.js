@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const { DocumentStore } = require('ravendb');
 
 var app = express();
 
