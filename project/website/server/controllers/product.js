@@ -39,7 +39,10 @@ class PurchseLine {
 }
 
 async function makePurchase(req, res) {
-  const { productId, clientId, quantity } = req.body;
+  const { clientId, quantity } = req.body;
+  const { storeId, sid } = req.params;
+
+  const productId = `products/${storeId}/${sid}`
 
   const session = store.openSession()
 
