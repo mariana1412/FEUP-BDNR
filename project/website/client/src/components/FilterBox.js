@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React, { useState } from 'react';
 import { Autocomplete, Slider, TextField } from '@mui/material';
+import { Form } from 'react-bootstrap';
 
 export default function FilterBox({
   title, filterType, options, step, filters, setFilters,
@@ -52,6 +53,25 @@ export default function FilterBox({
             />
           )}
         />
+        )}
+        {filterType === 'checkbox' && (
+        <Form.Group>
+          {options.map((option) => (
+            <Form.Check
+              key={option.value}
+              type="checkbox"
+              label={`${option.value} (${option.count})`}
+              checked={filters.includes(option.value)}
+              onChange={(event) => {
+                if (event.target.checked) {
+                  setFilters('stores', [...filters, option.value]);
+                } else {
+                  setFilters('stores', filters.filter((item) => item !== option.value));
+                }
+              }} // eslint-disable-line  react/jsx-no-bind
+            />
+          ))}
+        </Form.Group>
         )}
       </div>
     </div>

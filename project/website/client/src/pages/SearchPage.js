@@ -15,11 +15,13 @@ export default function SearchPage() {
   const [text, setText] = useState('');
   const [page, setPage] = useState(1);
   const [resultsNumber, setResultsNumber] = useState(0);
+  const [stores, setStores] = useState([]);
   const [filters, setFilters] = useState({
     category: [],
     rating: [0, 5],
-    price: [0, 1000],
-    stock: [0, 100],
+    price: [0, 600000],
+    stock: [0, 1000],
+    stores: [],
   });
 
   const updateFilters = (key, value) => {
@@ -32,6 +34,14 @@ export default function SearchPage() {
       .then(({ data }) => {
         setProducts(data.data);
         setResultsNumber(data.totalResults);
+
+        const storesAux = [];
+
+        data.stores.forEach((store) => {
+          storesAux.push({ value: store.range, count: store.count });
+        });
+
+        setStores(storesAux);
         setLoading(false);
       })
       .catch(() => setError(true));
@@ -47,6 +57,7 @@ export default function SearchPage() {
         rating: filters.rating,
         price: filters.price,
         stock: filters.stock,
+        stores: filters.stores,
         text,
         page: newPage - 1,
         perPage,
@@ -73,9 +84,9 @@ export default function SearchPage() {
             filterType="number"
             options={[
               { value: 0, label: '0€' },
-              { value: 1000, label: '1000€' },
+              { value: 600000, label: '600000€' },
             ]}
-            step={20}
+            step={500}
             filters={filters.price}
             setFilters={updateFilters}
           />
@@ -95,10 +106,18 @@ export default function SearchPage() {
             filterType="number"
             options={[
               { value: 0, label: '0' },
-              { value: 100, label: '100' },
+              { value: 1000, label: '1000' },
             ]}
             step={10}
             filters={filters.stock}
+            setFilters={updateFilters}
+          />
+          <FilterBox
+            title="store"
+            filterType="checkbox"
+            options={stores}
+            step={10}
+            filters={filters.stores}
             setFilters={updateFilters}
           />
         </Col>

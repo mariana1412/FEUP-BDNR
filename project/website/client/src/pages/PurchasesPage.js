@@ -9,7 +9,6 @@ export default function PurchasesPage() {
   const [purchases, setPurchases] = useState([]);
 
   const getPurchases = () => {
-    console.log(name, type);
     axios.get('http://localhost:3001/purchases/history', { params: { type, name } }).then(({ data }) => {
       setPurchases(data);
     }).catch((err) => {

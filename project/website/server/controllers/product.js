@@ -1,30 +1,50 @@
 const { store } = require("../config");
+const { Facet } = require("ravendb");
 
 async function getProducts(req, res) {
   let { page, perPage } = req.query;
   page = parseInt(page);
   perPage = parseInt(perPage);
-  if (isNaN(page) || isNaN(perPage)) return res.status(400).send("Both page and perPage are required and need to be numbers.")
+  if (isNaN(page) || isNaN(perPage))
+    return res
+      .status(400)
+      .send("Both page and perPage are required and need to be numbers.");
+
+  const facet = new Facet();
+  facet.fieldName = "store";
+
   const session = store.openSession();
-  const result = await session.query({ collection: 'Products' }).skip(page).take(perPage).all();
-  return res.status(200).send(result);
+
+  const facetValues = await session
+    .query({ indexName: "products/search" })
+    .aggregateBy(facet)
+    .execute();
+
+  const result = await session
+    .query({ collection: "Products" })
+    .statistics((s) => (stats = s))
+    .skip(page * perPage)
+    .take(perPage)
+    .all();
+  return res
+    .status(200)
+    .send({
+      data: result,
+      totalResults: stats.totalResults,
+      stores: facetValues.store.values,
+    });
 }
 
 async function getProduct(req, res) {
   const { id } = req.params;
-  const session = products.openSession();
+  const session = store.openSession();
   const result = await session.load(id);
   if (result === null) return res.status(404).send(`Product ${id} not found.`);
   return res.status(200).send(result);
 }
 
-function stringToList(list) {
-  if (!list) return [];
-  return list.replace("[", "").replace("]", "").split(",");
-}
-
 async function searchProducts(req, res) {
-  let { text, category, rating, stock, price } = req.query;
+  let { text, category, rating, stock, price, stores } = req.query;
 
   let { page, perPage } = req.query;
   page = parseInt(page);
@@ -36,7 +56,7 @@ async function searchProducts(req, res) {
 
   let alreadyCond = false;
 
-  const session = products.openSession();
+  const session = store.openSession();
   let query = "from index 'products/search'\n";
 
   if (text && text !== "") {
@@ -51,7 +71,7 @@ async function searchProducts(req, res) {
     alreadyCond = true;
   }
 
-  if (category) {
+  if (category && category.length > 0) {
     category = category.replace("[", "(").replace("]", ")");
     if (alreadyCond) query += "and ";
     else query += "where ";
@@ -70,16 +90,30 @@ async function searchProducts(req, res) {
     if (alreadyCond) query += "and ";
     else query += "where ";
     query += `price between ${price[0]} and ${price[1]}\n`;
+    alreadyCond = true;
+  }
+
+  if (stores) {
+    let storesAux = "(";
+    stores.forEach((store) => {
+      storesAux += `"${store}", `;
+    });
+    storesAux = storesAux.substring(0, storesAux.length - 2) + ')';
+    if (alreadyCond) query += "and ";
+    else query += "where ";
+    query += `store in ${storesAux}\n`;
   }
 
   const result = await session.advanced
     .rawQuery(query)
-    .statistics(s => stats = s)
-    .skip(page)
+    .statistics((s) => (stats = s))
+    .skip(page * perPage)
     .take(perPage)
     .all();
 
-  return res.status(200).send({data: result, totalResults: stats.totalResults});
+  return res
+    .status(200)
+    .send({ data: result, totalResults: stats.totalResults });
 }
 
 module.exports = {

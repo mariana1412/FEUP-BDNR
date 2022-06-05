@@ -22,6 +22,10 @@ export default function Product({ product }) {
         </h5>
         <p className="product-card-description">{product.description}</p>
         <p>
+          <b>Store: </b>
+          {product.store}
+        </p>
+        <p>
           <b>Stock: </b>
           {product.stock}
         </p>
