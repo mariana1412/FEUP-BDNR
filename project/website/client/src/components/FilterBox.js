@@ -14,6 +14,7 @@ export default function FilterBox({
   }
 
   const handleChange = (value) => {
+    console.log(value);
     setFilters(title, value);
   };
 
@@ -41,9 +42,10 @@ export default function FilterBox({
           id="search-autocomplete"
           size="small"
           value={filters}
-          onChange={(event, value) => handleChange(value)}
-          options={options.sort((a, b) => -b.charAt(0).localeCompare(a.charAt(0)))}
-          groupBy={(option) => option.charAt(0)}
+          onChange={(event, value) => handleChange(value.value)}
+          options={options.sort((a, b) => -b.value.charAt(0).localeCompare(a.value.charAt(0)))}
+          groupBy={(option) => option.value.charAt(0)}
+          getOptionLabel={(option) => option.value}
           limitTags={3}
           ListboxProps={{ style: { maxHeight: '200px', overflow: 'auto' } }}
           renderInput={(params) => (

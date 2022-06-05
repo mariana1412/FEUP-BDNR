@@ -33,11 +33,11 @@ export default function Product({ product }) {
           <strong>Categories: </strong>
           {getCategory(product.category)}
         </p>
-        <Row className="d-flex justify-content-center align-items-center">
+        <Row className="d-flex justify-content-center">
           <Col>
             <Rating name="half-rating-read" defaultValue={product.rating} precision={0.1} readOnly />
           </Col>
-          <Col sm={4}>
+          <Col sm={5} className="d-flex align-items-end">
             <span className="product-card-price">
               {Number(product.price).toFixed(2)}
               €

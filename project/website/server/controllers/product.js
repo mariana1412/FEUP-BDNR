@@ -10,14 +10,22 @@ async function getProducts(req, res) {
       .status(400)
       .send("Both page and perPage are required and need to be numbers.");
 
-  const facet = new Facet();
-  facet.fieldName = "store";
+  const storeFacet = new Facet();
+  storeFacet.fieldName = "store";
+
+  const categoryFacet = new Facet();
+  categoryFacet.fieldName = "category";
 
   const session = store.openSession();
 
-  const facetValues = await session
+  const storeFacetValues = await session
     .query({ indexName: "products/search" })
-    .aggregateBy(facet)
+    .aggregateBy(storeFacet)
+    .execute();
+
+  const categoryFacetValues = await session
+    .query({ indexName: "products/search" })
+    .aggregateBy(categoryFacet)
     .execute();
 
   const result = await session
@@ -26,12 +34,14 @@ async function getProducts(req, res) {
     .skip(page * perPage)
     .take(perPage)
     .all();
+
   return res
     .status(200)
     .send({
       data: result,
       totalResults: stats.totalResults,
-      stores: facetValues.store.values,
+      stores: storeFacetValues.store.values,
+      categories: categoryFacetValues.category.values,
     });
 }
 
@@ -61,7 +71,7 @@ async function searchProducts(req, res) {
 
   if (text && text !== "") {
     alreadyCond = true;
-    query += `where (boost(search(exactName, "${text}"), 10) or boost(search(name, "${text}"), 5) or search(body, "${text}"))\n`;
+    query += `where (boost(search(exactName, "${text}"), 10) or boost(search(name, "${text}"), 5) or search(description, "${text}"))\n`;
   }
 
   if (stock) {
@@ -72,24 +82,28 @@ async function searchProducts(req, res) {
   }
 
   if (category && category.length > 0) {
-    category = category.replace("[", "(").replace("]", ")");
+    let categoryAux = "(";
+    category.forEach((store) => {
+      categoryAux += `"${store}", `;
+    });
+    categoryAux = categoryAux.substring(0, categoryAux.length - 2) + ')';
     if (alreadyCond) query += "and ";
     else query += "where ";
-    query += `category all in ${category}\n`;
+    query += `category all in ${categoryAux}\n`;
     alreadyCond = true;
   }
 
   if (rating) {
     if (alreadyCond) query += "and ";
     else query += "where ";
-    query += `rating between ${rating[0]} and ${rating[1]}\n`;
+    query += `rating between ${Number(rating[0]).toFixed(1)} and ${Number(rating[1]).toFixed(1)}\n`;
     alreadyCond = true;
   }
 
   if (price) {
     if (alreadyCond) query += "and ";
     else query += "where ";
-    query += `price between ${price[0]} and ${price[1]}\n`;
+    query += `price between ${Number(price[0]).toFixed(2)} and ${Number(price[1]).toFixed(2)}\n`;
     alreadyCond = true;
   }
 
@@ -111,9 +125,15 @@ async function searchProducts(req, res) {
     .take(perPage)
     .all();
 
+  query += "select facet(store)";
+  const facet = await session.advanced.rawQuery(query).executeAggregation();
+
+  query = query.replace("select facet(store)", "select facet(category)");
+  const categoryFacet = await session.advanced.rawQuery(query).executeAggregation();
+  
   return res
     .status(200)
-    .send({ data: result, totalResults: stats.totalResults });
+    .send({ data: result, totalResults: stats.totalResults, stores: facet.store.values, categories: categoryFacet.category.values });
 }
 
 module.exports = {

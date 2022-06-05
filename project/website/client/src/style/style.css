@@ -53,6 +53,20 @@
   cursor: pointer;
 }
 
+.MuiAutocomplete-root {
+  background-color: #fff9f3;
+}
+
+.MuiOutlinedInput-root {
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.rbt-input-main:focus {
+  border: none !important;
+  box-shadow: none !important;
+}
+
 /*************************** Product Crd ***************************/
 .product-card {
   border-color: #1b4058 !important;

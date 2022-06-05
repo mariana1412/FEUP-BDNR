@@ -16,6 +16,7 @@ export default function SearchPage() {
   const [page, setPage] = useState(1);
   const [resultsNumber, setResultsNumber] = useState(0);
   const [stores, setStores] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [filters, setFilters] = useState({
     category: [],
     rating: [0, 5],
@@ -28,29 +29,32 @@ export default function SearchPage() {
     setFilters({ ...filters, [key]: value });
   };
 
+  const parseFacets = (list, setFunction) => {
+    const result = [];
+    list.forEach((item) => {
+      result.push({ value: item.range, count: item.count });
+    });
+
+    setFunction(result);
+  };
+
   useEffect(() => {
     setPage(1);
     axios.get(`${process.env.REACT_APP_BACKEND_SERVER}/product`, { params: { page, perPage } })
       .then(({ data }) => {
         setProducts(data.data);
         setResultsNumber(data.totalResults);
-
-        const storesAux = [];
-
-        data.stores.forEach((store) => {
-          storesAux.push({ value: store.range, count: store.count });
-        });
-
-        setStores(storesAux);
+        parseFacets(data.stores, setStores);
+        parseFacets(data.categories, setCategories);
         setLoading(false);
       })
       .catch(() => setError(true));
   }, []);
 
   const getProducts = (newPage) => {
+    setLoading(true);
     setPage(newPage);
     setError(false);
-    setLoading(true);
     axios.get(`${process.env.REACT_APP_BACKEND_SERVER}/product/search`, {
       params: {
         category: filters.category,
@@ -65,6 +69,8 @@ export default function SearchPage() {
     }).then(({ data }) => {
       setResultsNumber(data.totalResults);
       setProducts(data.data);
+      parseFacets(data.stores, setStores);
+      parseFacets(data.categories, setCategories);
       setLoading(false);
     }).catch(() => {
       setError(true);
@@ -118,6 +124,13 @@ export default function SearchPage() {
             options={stores}
             step={10}
             filters={filters.stores}
+            setFilters={updateFilters}
+          />
+          <FilterBox
+            title="category"
+            filterType="autocomplete"
+            options={categories}
+            filters={filters.category}
             setFilters={updateFilters}
           />
         </Col>
