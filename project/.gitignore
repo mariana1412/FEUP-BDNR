@@ -1,3 +1,8 @@
-/data
+**/data
+*.csv
+data_preparation/**/*.json
+**/node_modules/
+**/.env
 /ravendb/json
+*/json_old
 license.json
