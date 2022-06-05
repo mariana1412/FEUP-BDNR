@@ -6,7 +6,7 @@ export default function PurchaseList({ purchases }) {
     <div>
       {
         purchases ? purchases.map((purchase) => (
-          <PurchaseDetails key={purchase.id} purchase={purchase} />
+          <PurchaseDetails key={purchase.Id} purchase={purchase} />
         ))
           : null
       }

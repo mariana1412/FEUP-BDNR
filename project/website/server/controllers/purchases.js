@@ -1,7 +1,9 @@
 const { store } = require("../config");
 
 async function getHistory(req, res){
-    const { username, type, page, perPage } = req.query
+    const { name, type } = req.query
+    const perPage = parseInt(req.query.perPage)
+    const page = (parseInt(req.query.page) - 1) * perPage
     
     console.log("Recived getHistory request", req.query);
     
@@ -9,13 +11,14 @@ async function getHistory(req, res){
         const session = store.openSession()
 
         try {
-            const query = session.query({ indexName: 'purchasesByUsernameAndClientName' })
-                .whereEquals('username', username)
+            const query = session.query({ indexName: 'purchasesByUsername' })
+                .whereEquals('username', name)
+                .statistics(s => stats = s)
                 .orderByDescending('orderDate')
 
-            const results = await query.skip(parseInt(page)).take(parseInt(perPage)).all()
+            const results = await query.skip(page).take(perPage).all()
 
-            return res.status(200).send(results)
+            return res.status(200).send({ data: results, totalResults: stats.totalResults })
         } catch (e) {
             console.log(e);
             return res.status(500).send("Error in clients query")
@@ -24,13 +27,14 @@ async function getHistory(req, res){
         const session = store.openSession()
 
         try {
-            const query = session.query({ indexName: 'purchasesByStore' })
-                .whereEquals('store', username)
+            const query = session.query({ indexName: 'purchasesLinesByStore' })
+                .whereEquals('store', name)
+                .statistics(s => stats = s)
                 .orderByDescending('orderDate')
 
-            const results = await query.skip(parseInt(page)).take(parseInt(perPage)).all()
+            const results = await query.skip(page).take(perPage).all()
 
-            return res.status(200).send(results)
+            return res.status(200).send({ data: results, totalResults: stats.totalResults })
         } catch (e) {
             console.log(e);
             return res.status(500).send("Error in store query")
@@ -40,11 +44,12 @@ async function getHistory(req, res){
 
         try {
             const query = session.query({ collection: 'Purchases' })
+                .statistics(s => stats = s)
                 .orderByDescending('orderDate')
 
-            const results = await query.skip(parseInt(page)).take(parseInt(perPage)).all()
+            const results = await query.skip(page).take(perPage).all()
 
-            return res.status(200).send(results)
+            return res.status(200).send({ data: results, totalResults: stats.totalResults })
         } catch (e) {
             console.log(e);
             return res.status(500).send("Error in admin query")

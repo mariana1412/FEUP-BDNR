@@ -6,9 +6,9 @@ using System.Globalization;
 using System.Linq;
 using Raven.Client.Documents.Indexes;
 
-public class Index_purchasesByClientName : AbstractIndexCreationTask
+public class Index_purchasesByUsername : AbstractIndexCreationTask
 {
-    public override string IndexName => "purchasesByClientName";
+    public override string IndexName => "purchasesByUsername";
 
     public override IndexDefinition CreateIndexDefinition()
     {
@@ -18,7 +18,8 @@ public class Index_purchasesByClientName : AbstractIndexCreationTask
             {
             @"from purchase in docs.Purchases
 select new {
-    clientName = LoadDocument(purchase.client, ""Clients"").name
+    username = LoadDocument(purchase.client, ""Clients"").username,
+    purchase.orderDate
 }"
             }
         };
