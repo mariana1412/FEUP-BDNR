@@ -9,7 +9,7 @@ def put(object):
     id = object.pop('Id', None)
 
     return {
-        "Id": id,
+        "Id": "purchases|",
         "Document": object, 
         "Type": "PUT"
     }
