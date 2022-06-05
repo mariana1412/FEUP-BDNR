@@ -13,7 +13,7 @@ if [[ $BUILD ]]; then
         docker rm -vf $(docker ps -aq)
     fi
 
-    rm -rf ../data
+    sudo rm -rf ../data
 
     docker-compose build
 
