@@ -47,13 +47,15 @@ async function makePurchase(req, res) {
   const session = store.openSession()
 
   try {
-    const product = await session.load(productId)
+    const productCounters = session.countersFor(productId)
 
-    if (product.stock < quantity) {
+    if (await productCounters.get('stock') < quantity) {
       return res.status(403).send("Insufficient stock")
     }
 
-    product.stock -= quantity
+    productCounters.increment('stock', -quantity)
+
+    const product = await session.load(productId)
 
     const lines = [new PurchseLine(quantity, product.id, product.name, product.price, product.store)]
     const orderDate = new Date(Date.now()).toISOString()
