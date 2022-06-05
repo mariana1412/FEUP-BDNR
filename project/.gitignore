@@ -5,3 +5,4 @@ data_preparation/**/*.json
 **/.env
 /ravendb/json
 */json_old
+license.json
