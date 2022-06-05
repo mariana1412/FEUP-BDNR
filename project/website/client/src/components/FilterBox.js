@@ -13,9 +13,13 @@ export default function FilterBox({
     return value;
   }
 
-  const handleChange = (value) => {
-    console.log(value);
-    setFilters(title, value);
+  const handleAutocompleteChanges = (values) => {
+    const newValues = [];
+    values.map(({ value }) => {
+      newValues.push(value);
+      return value;
+    });
+    setFilters(title, newValues);
   };
 
   return (
@@ -33,7 +37,7 @@ export default function FilterBox({
           step={step}
           valueLabelDisplay="auto"
           marks={options}
-          onChangeCommitted={(event, value) => handleChange(value)}
+          onChangeCommitted={(event, value) => setFilters(title, value)}
         />
         )}
         {filterType === 'autocomplete' && (
@@ -42,10 +46,9 @@ export default function FilterBox({
           id="search-autocomplete"
           size="small"
           value={filters}
-          onChange={(event, value) => handleChange(value.value)}
+          onChange={(event, value) => handleAutocompleteChanges(value)}
           options={options.sort((a, b) => -b.value.charAt(0).localeCompare(a.value.charAt(0)))}
           groupBy={(option) => option.value.charAt(0)}
-          getOptionLabel={(option) => option.value}
           limitTags={3}
           ListboxProps={{ style: { maxHeight: '200px', overflow: 'auto' } }}
           renderInput={(params) => (
