@@ -38,7 +38,6 @@ class PurchseLine {
   }
 }
 
-
 async function makePurchase(req, res) {
   const { productId, clientId, quantity } = req.body;
 
@@ -68,8 +67,28 @@ async function makePurchase(req, res) {
   }
 }
 
+async function deleteProduct(req, res) {
+  const { storeId, sid } = req.params;
+
+  const productId = `products/${storeId}/${sid}`
+
+  const session = store.openSession()
+
+  try {
+    session.delete(productId)
+
+    session.saveChanges()
+
+    return res.status(200).send(productId)
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send('Error deleting product')
+  }
+}
+
 module.exports = {
   getProducts,
   getProduct,
   makePurchase,
+  deleteProduct,
 };

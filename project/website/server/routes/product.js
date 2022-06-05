@@ -8,4 +8,6 @@ router.get('/:id', controller.getProduct);
 
 router.put('/buy', controller.makePurchase);
 
+router.delete('/:storeId/:sid', controller.deleteProduct);
+
 module.exports = router;
