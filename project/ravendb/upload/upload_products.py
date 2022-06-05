@@ -1,7 +1,6 @@
 import os
 import json
 import requests
-from sympy import re
 
 def put(object):
     object["@metadata"] = {
