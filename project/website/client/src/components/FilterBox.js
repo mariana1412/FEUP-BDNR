@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React, { useState } from 'react';
 import { Autocomplete, Slider, TextField } from '@mui/material';
+import { Form } from 'react-bootstrap';
 
 export default function FilterBox({
   title, filterType, options, step, filters, setFilters,
@@ -12,8 +13,13 @@ export default function FilterBox({
     return value;
   }
 
-  const handleChange = (value) => {
-    setFilters(title, value);
+  const handleAutocompleteChanges = (values) => {
+    const newValues = [];
+    values.map(({ value }) => {
+      newValues.push(value);
+      return value;
+    });
+    setFilters(title, newValues);
   };
 
   return (
@@ -31,7 +37,7 @@ export default function FilterBox({
           step={step}
           valueLabelDisplay="auto"
           marks={options}
-          onChangeCommitted={(event, value) => handleChange(value)}
+          onChangeCommitted={(event, value) => setFilters(title, value)}
         />
         )}
         {filterType === 'autocomplete' && (
@@ -40,9 +46,9 @@ export default function FilterBox({
           id="search-autocomplete"
           size="small"
           value={filters}
-          onChange={(event, value) => handleChange(value)}
-          options={options.sort((a, b) => -b.charAt(0).localeCompare(a.charAt(0)))}
-          groupBy={(option) => option.charAt(0)}
+          onChange={(event, value) => handleAutocompleteChanges(value)}
+          options={options.sort((a, b) => -b.value.charAt(0).localeCompare(a.value.charAt(0)))}
+          groupBy={(option) => option.value.charAt(0)}
           limitTags={3}
           ListboxProps={{ style: { maxHeight: '200px', overflow: 'auto' } }}
           renderInput={(params) => (
@@ -52,6 +58,25 @@ export default function FilterBox({
             />
           )}
         />
+        )}
+        {filterType === 'checkbox' && (
+        <Form.Group>
+          {options.map((option) => (
+            <Form.Check
+              key={option.value}
+              type="checkbox"
+              label={`${option.value} (${option.count})`}
+              checked={filters.includes(option.value)}
+              onChange={(event) => {
+                if (event.target.checked) {
+                  setFilters('stores', [...filters, option.value]);
+                } else {
+                  setFilters('stores', filters.filter((item) => item !== option.value));
+                }
+              }} // eslint-disable-line  react/jsx-no-bind
+            />
+          ))}
+        </Form.Group>
         )}
       </div>
     </div>

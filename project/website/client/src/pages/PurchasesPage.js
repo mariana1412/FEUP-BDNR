@@ -16,7 +16,6 @@ export default function PurchasesPage() {
 
   const getPurchases = (newPage) => {
     setPage(newPage);
-    console.log(name, type);
     axios.get('http://localhost:3001/purchases/history', {
       params: {
         type, name, page: newPage, perPage,

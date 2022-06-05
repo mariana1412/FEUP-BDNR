@@ -43,3 +43,30 @@ Get a product by id.
 - Possible responses:
   - `200`: Success - Returns the product;
   - `404`: Product not found.
+
+### `GET` /product/search
+Search for products with pagination.
+- Pagination is done by specifying the page number and the number of items per page.
+- Possible responses:
+  - `200`: Success - Returns the products;
+  - `400`: Invalid page number or items per page.
+- Receives the following arguments:
+    - page: the page to get (starts at 0);
+    - perPage: the amount of products per page;
+    - text: the text to search for;
+    - category: the categories to search for;
+    - price: the price range to search for;
+    - rating: the rating range to search for;
+    - stock: the stock range to search for.
+```
+{
+  "page": Number required,
+  "perPage": Number required,
+  "text": String,
+  "store": String[],
+  "category": String[],
+  "rating": Number[],
+  "stocks": Number[],
+  "price": Number[]
+} 
+```
