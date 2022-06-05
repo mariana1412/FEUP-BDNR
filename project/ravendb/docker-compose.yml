@@ -1,48 +1,12 @@
 version: '3'
 
 services:
-  raven1:
-    container_name: raven1
+  ravendb:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
       - "38888:38888"
-    environment:
-      - "RAVEN_ServerUrl=http://0.0.0.0:8080"
-      - "RAVEN_PublicServerUrl=http://localhost:8080"
-      - "RAVEN_ServerUrl_Tcp=tcp://0.0.0.0:38888"
-      - "RAVEN_PublicServerUrl_Tcp=tcp://localhost:38888"
     volumes:
-      - ../data/raven1:/opt/RavenDB/Server/RavenData
-  raven2:
-    container_name: raven2
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8080"
-      - "38889:38888"
-    environment:
-      - "RAVEN_ServerUrl=http://0.0.0.0:8080"
-      - "RAVEN_PublicServerUrl=http://localhost:8081"
-      - "RAVEN_ServerUrl_Tcp=tcp://0.0.0.0:38888"
-      - "RAVEN_PublicServerUrl_Tcp=tcp://raven2:38888"
-    volumes:
-      - ../data/raven2:/opt/RavenDB/Server/RavenData
-  raven3:
-    container_name: raven3
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8082:8080"
-      - "38890:38888"
-    environment:
-      - "RAVEN_ServerUrl=http://0.0.0.0:8080"
-      - "RAVEN_PublicServerUrl=http://localhost:8082"
-      - "RAVEN_ServerUrl_Tcp=tcp://0.0.0.0:38888"
-      - "RAVEN_PublicServerUrl_Tcp=tcp://raven3:38888"
-    volumes:
-      - ../data/raven3:/opt/RavenDB/Server/RavenData
+      - ../data:/opt/RavenDB/Server/RavenData
