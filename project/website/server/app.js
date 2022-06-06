@@ -14,6 +14,9 @@ app.use('/product', product);
 const purchases = require('./routes/purchases');
 app.use('/purchases', purchases)
 
+const clients = require('./routes/clients');
+app.use('/clients', clients)
+
 app.listen(port, () => console.log("Backend server live on " + port));
 
 module.exports = app;

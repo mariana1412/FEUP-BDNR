@@ -160,15 +160,97 @@ async function getMoreLikeThis(req, res) {
         )
         .withOptions(options)
     )
-    .take(6)
+    .take(8)
     .all();
 
   return res.status(200).send(result);
 }
 
+class Purchase {
+  constructor(client, lines, total, orderDate) {
+    this.client = client
+    this.lines = lines
+    this.total = total
+    this.orderDate = orderDate
+  }
+}
+
+class PurchseLine {
+  constructor(quantity, productId, productName, unitPrice, store) {
+    this.quantity = quantity
+    this.productId = productId
+    this.productName = productName
+    this.unitPrice = unitPrice
+    this.price = unitPrice * quantity
+    this.store = store
+  }
+}
+
+async function makePurchase(req, res) {
+  const { username, quantity } = req.body;
+  const { storeId, sid } = req.params;
+
+  const productId = `products/${storeId}/${sid}`
+
+  const session = store.openSession();
+
+  let clientId;
+  try {
+    const client = await session.query({collection: "Clients"}).whereEquals("username", username).all();
+    clientId = client[0].id;
+  }
+  catch (err) {
+    return res.status(404).send(`Client ${username} not found.`);
+  }
+
+  try {
+    const product = await session.load(productId)
+
+    if (product.stock < quantity) {
+      return res.status(403).send("Insufficient stock.")
+    }
+
+    product.stock -= quantity
+
+    const lines = [new PurchseLine(quantity, product.id, product.name, product.price, product.store)]
+    const orderDate = new Date(Date.now()).toISOString()
+    const purchase = new Purchase(clientId, lines, product.price * quantity, orderDate)
+    
+    await session.store(purchase, 'purchases/')
+    
+    await session.saveChanges()
+
+    return res.status(201).send(purchase)
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send('Error making purchase')
+  }
+}
+
+async function deleteProduct(req, res) {
+  const { storeId, sid } = req.params;
+
+  const productId = `products/${storeId}/${sid}`
+
+  const session = store.openSession()
+
+  try {
+    session.delete(productId)
+
+    session.saveChanges()
+
+    return res.status(200).send(productId)
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send('Error deleting product')
+  }
+}
+
 module.exports = {
   getProducts,
   getProduct,
+  makePurchase,
+  deleteProduct,
   searchProducts,
   getMoreLikeThis,
 };

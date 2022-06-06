@@ -13,6 +13,7 @@ export default function NavBar() {
           <Nav className="me-auto">
             <Nav.Link href="/" className="text-white">Search</Nav.Link>
             <Nav.Link href="/purchases" className="text-white">Purchases</Nav.Link>
+            <Nav.Link href="/clients" className="text-white">Clients</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
