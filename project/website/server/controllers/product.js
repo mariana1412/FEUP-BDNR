@@ -135,14 +135,12 @@ async function searchProducts(req, res) {
     .rawQuery(query)
     .executeAggregation();
 
-  return res
-    .status(200)
-    .send({
-      data: result,
-      totalResults: stats.totalResults,
-      stores: facet.store.values,
-      categories: categoryFacet.category.values,
-    });
+  return res.status(200).send({
+    data: result,
+    totalResults: stats.totalResults,
+    stores: facet.store.values,
+    categories: categoryFacet.category.values,
+  });
 }
 
 async function getMoreLikeThis(req, res) {

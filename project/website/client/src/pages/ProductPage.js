@@ -89,9 +89,9 @@ export default function ProductPage() {
         </Col>
         <Col>
           <h2 className="product-title">{product.name}</h2>
-          <h6 className="product-categories">#{getCategories()}</h6>
+          {product.category && product.category.length > 0 && <h6 className="product-categories">#{getCategories()}</h6>}
           {!large ? (
-            <p className="mt-4">{product.description}</p>
+            <p className="mt-4">{product.description === 'nan' ? 'No description available.' : product.description}</p>
           ) : (
             <div className="mt-4">
               {fullDesc ? (
