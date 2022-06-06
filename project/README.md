@@ -20,11 +20,7 @@ Data should be stored in a `data` folder in the root of the repository. Raven wi
 ./startup.sh -b
 ```
 
-Then, you must create the databases through the Raven Studio interface. For this, navigate to `http://localhost:8080/studio/index.html#databases` and create three databases named:
-
-- `nolx`
-
-After creating the databases, run the `upload.sh` script also found in the `ravendb` folder.
+Run the `upload.sh` script also found in the `ravendb` folder.
 
 ```
 ./upload.sh
