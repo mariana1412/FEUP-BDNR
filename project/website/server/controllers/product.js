@@ -216,7 +216,7 @@ async function makePurchase(req, res) {
     const orderDate = new Date(Date.now()).toISOString()
     const purchase = new Purchase(clientId, lines, product.price * quantity, orderDate)
     
-    await session.store(purchase, 'purchases/')
+    await session.store(purchase, 'purchases|')
     
     await session.saveChanges()
 
