@@ -15,7 +15,7 @@ export default function Product({ product }) {
   };
 
   return (
-    <Card variant="outlined" className="product-card" onClick={() => navigate(`/product/${product.id}`)}>
+    <Card variant="outlined" className="product-card" onClick={() => navigate(`/product/${product.id.replace('products/', '')}`)}>
       <CardContent>
         <h5 className="product-card-title">
           {product.name}
