@@ -13,15 +13,6 @@ export default function FilterBox({
     return value;
   }
 
-  const handleAutocompleteChanges = (values) => {
-    const newValues = [];
-    values.map(({ value }) => {
-      newValues.push(value);
-      return value;
-    });
-    setFilters(title, newValues);
-  };
-
   return (
     <div className="filter-box">
       <p className="filter-box-title" onClick={() => setIsOpen(!isOpen)}>{title}</p>
@@ -46,9 +37,9 @@ export default function FilterBox({
           id="search-autocomplete"
           size="small"
           value={filters}
-          onChange={(event, value) => handleAutocompleteChanges(value)}
-          options={options.sort((a, b) => -b.value.charAt(0).localeCompare(a.value.charAt(0)))}
-          groupBy={(option) => option.value.charAt(0)}
+          onChange={(event, value) => setFilters(title, value)}
+          options={options.sort((a, b) => -b.charAt(0).localeCompare(a.charAt(0)))}
+          groupBy={(option) => option.charAt(0)}
           limitTags={3}
           ListboxProps={{ style: { maxHeight: '200px', overflow: 'auto' } }}
           renderInput={(params) => (

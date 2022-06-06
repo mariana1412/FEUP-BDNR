@@ -124,19 +124,19 @@ export default function ProductPage() {
             />
             <p className="rating">{product.rating}</p>
           </div>
-          {product.reviews.length === 0 && (
+          {!product.reviews || product.reviews.length === 0 ? (
             <Row>
               <p>No reviews yet</p>
             </Row>
-          )}
-          {product.reviews.map((item, index) => (
-            <ReviewCard key={index} review={item} />
-          ))}
+          )
+            : (product.reviews.map((item, index) => (
+              <ReviewCard key={index} review={item} />
+            )))}
         </Col>
       </Row>
       <Divider className="my-4" />
       <h4>More like this</h4>
-      {morelikethis.length === 0 ? (
+      {!morelikethis || morelikethis.length === 0 ? (
         <p>There is nothing to recommend!</p>
       ) : (
         <Row>

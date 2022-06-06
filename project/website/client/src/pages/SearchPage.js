@@ -38,6 +38,15 @@ export default function SearchPage() {
     setFunction(result);
   };
 
+  const parseCategories = (list) => {
+    const result = [];
+    list.forEach((item) => {
+      result.push(item.range);
+    });
+
+    setCategories(result);
+  };
+
   useEffect(() => {
     setPage(1);
     axios.get(`${process.env.REACT_APP_BACKEND_SERVER}/product`, { params: { page, perPage } })
@@ -45,7 +54,7 @@ export default function SearchPage() {
         setProducts(data.data);
         setResultsNumber(data.totalResults);
         parseFacets(data.stores, setStores);
-        parseFacets(data.categories, setCategories);
+        parseCategories(data.categories);
         setLoading(false);
       })
       .catch(() => setError(true));
@@ -70,7 +79,7 @@ export default function SearchPage() {
       setResultsNumber(data.totalResults);
       setProducts(data.data);
       parseFacets(data.stores, setStores);
-      parseFacets(data.categories, setCategories);
+      parseCategories(data.categories);
       setLoading(false);
     }).catch(() => {
       setError(true);
