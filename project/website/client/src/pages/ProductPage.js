@@ -5,13 +5,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import axios from 'axios';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Button } from 'react-bootstrap';
 import {
   Rating, Divider, Box, CircularProgress,
 } from '@mui/material';
 import ProductInfoCard from '../components/ProductInfoCard';
 import ReviewCard from '../components/ReviewCard';
 import Product from '../components/Product';
+import BuyModal from '../components/BuyModal';
 
 export default function ProductPage() {
   const { store, sid } = useParams();
@@ -21,6 +22,7 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [large, setLarge] = useState(false);
   const [morelikethis, setMorelikethis] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -115,15 +117,23 @@ export default function ProductPage() {
           )}
 
           <Divider className="my-4" />
-          <div className="justify-content-center d-flex">
-            <Rating
-              name="half-rating-read"
-              defaultValue={Number(product.rating)}
-              precision={0.1}
-              readOnly
-            />
-            <p className="rating">{product.rating}</p>
-          </div>
+          <Row className="d-flex justify-content-center align-items-center mb-3">
+            <Col className="d-flex justify-content-start">
+              <div className="justify-content-center d-flex">
+                <Rating
+                  name="half-rating-read"
+                  defaultValue={Number(product.rating)}
+                  precision={0.1}
+                  readOnly
+                />
+                <span className="rating">{product.rating}</span>
+              </div>
+            </Col>
+            <Col className="d-flex justify-content-end">
+              <Button onClick={() => setOpenModal(true)}>Buy</Button>
+            </Col>
+          </Row>
+
           {!product.reviews || product.reviews.length === 0 ? (
             <Row>
               <p>No reviews yet</p>
@@ -141,12 +151,13 @@ export default function ProductPage() {
       ) : (
         <Row>
           {morelikethis.map((prod) => (
-            <Col key={prod.id} lg={2} className="mb-4">
+            <Col key={prod.id} lg={3} className="mb-4">
               <Product product={prod} />
             </Col>
           ))}
         </Row>
       )}
+      <BuyModal show={openModal} setShow={setOpenModal} product={product} />
     </div>
   );
 }

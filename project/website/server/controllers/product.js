@@ -160,7 +160,7 @@ async function getMoreLikeThis(req, res) {
         )
         .withOptions(options)
     )
-    .take(6)
+    .take(8)
     .all();
 
   return res.status(200).send(result);
@@ -187,18 +187,27 @@ class PurchseLine {
 }
 
 async function makePurchase(req, res) {
-  const { clientId, quantity } = req.body;
+  const { username, quantity } = req.body;
   const { storeId, sid } = req.params;
 
   const productId = `products/${storeId}/${sid}`
 
-  const session = store.openSession()
+  const session = store.openSession();
+
+  let clientId;
+  try {
+    const client = await session.query({collection: "Clients"}).whereEquals("username", username).all();
+    clientId = client[0].id;
+  }
+  catch (err) {
+    return res.status(404).send(`Client ${username} not found.`);
+  }
 
   try {
     const product = await session.load(productId)
 
     if (product.stock < quantity) {
-      return res.status(403).send("Insufficient stock")
+      return res.status(403).send("Insufficient stock.")
     }
 
     product.stock -= quantity
@@ -206,8 +215,8 @@ async function makePurchase(req, res) {
     const lines = [new PurchseLine(quantity, product.id, product.name, product.price, product.store)]
     const orderDate = new Date(Date.now()).toISOString()
     const purchase = new Purchase(clientId, lines, product.price * quantity, orderDate)
-
-    await session.store(purchase, 'purchases|')
+    
+    await session.store(purchase, 'purchases/')
     
     await session.saveChanges()
 
