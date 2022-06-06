@@ -5,9 +5,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import axios from 'axios';
-import {
-  Row, Col,
-} from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import {
   Rating, Divider, Box, CircularProgress,
 } from '@mui/material';
@@ -25,17 +23,26 @@ export default function ProductPage() {
   const [morelikethis, setMorelikethis] = useState(null);
 
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_BACKEND_SERVER}/product/${store}/${sid}`).then(({ data }) => {
-      setProduct(data);
-      setLarge(data.description.length > 740);
-    }).catch((err) => {
-      setError(err);
-    });
-    axios.get(`${process.env.REACT_APP_BACKEND_SERVER}/product/${store}/${sid}/morelikethis`).then(({ data }) => {
-      setMorelikethis(data);
-    }).catch((err) => {
-      setError(err);
-    });
+    window.scrollTo(0, 0);
+    axios
+      .get(`${process.env.REACT_APP_BACKEND_SERVER}/product/${store}/${sid}`)
+      .then(({ data }) => {
+        setProduct(data);
+        setLarge(data.description.length > 740);
+      })
+      .catch((err) => {
+        setError(err);
+      });
+    axios
+      .get(
+        `${process.env.REACT_APP_BACKEND_SERVER}/product/${store}/${sid}/morelikethis`,
+      )
+      .then(({ data }) => {
+        setMorelikethis(data);
+      })
+      .catch((err) => {
+        setError(err);
+      });
   }, [store, sid]);
 
   useEffect(() => {
@@ -51,11 +58,7 @@ export default function ProductPage() {
   };
 
   if (error !== '') {
-    return (
-      <div>
-        {error}
-      </div>
-    );
+    return <div>{error}</div>;
   }
 
   if (loading) {
@@ -89,61 +92,61 @@ export default function ProductPage() {
           <h6 className="product-categories">#{getCategories()}</h6>
           {!large ? (
             <p className="mt-4">{product.description}</p>
-          )
-            : (
-              <div className="mt-4">
-                {fullDesc ? (
-                  <p>{product.description}
-                    <a className="more" onClick={() => setFullDesc(!fullDesc)}>
-                      {' '}
-                      see less...
-                    </a>
-                  </p>
-                ) : (
-                  <p>
-                    {product.description.substr(0, 740)}
-                    <a className="more" onClick={() => setFullDesc(true)}>
-                      {' '}
-                      see more...
-                    </a>
-                  </p>
-                )}
-
-              </div>
-            )}
+          ) : (
+            <div className="mt-4">
+              {fullDesc ? (
+                <p>
+                  {product.description}
+                  <a className="more" onClick={() => setFullDesc(!fullDesc)}>
+                    {' '}
+                    see less...
+                  </a>
+                </p>
+              ) : (
+                <p>
+                  {product.description.substr(0, 740)}
+                  <a className="more" onClick={() => setFullDesc(true)}>
+                    {' '}
+                    see more...
+                  </a>
+                </p>
+              )}
+            </div>
+          )}
 
           <Divider className="my-4" />
           <div className="justify-content-center d-flex">
-            <Rating name="half-rating-read" defaultValue={Number(product.rating)} precision={0.1} readOnly />
-            <p className="rating">
-              {product.rating}
-            </p>
+            <Rating
+              name="half-rating-read"
+              defaultValue={Number(product.rating)}
+              precision={0.1}
+              readOnly
+            />
+            <p className="rating">{product.rating}</p>
           </div>
           {product.reviews.length === 0 && (
             <Row>
               <p>No reviews yet</p>
             </Row>
           )}
-          {product.reviews.map((item, index) => <ReviewCard key={index} review={item} />)}
+          {product.reviews.map((item, index) => (
+            <ReviewCard key={index} review={item} />
+          ))}
         </Col>
       </Row>
       <Divider className="my-4" />
-      <h4>
-        More like this
-      </h4>
-      {morelikethis.length === 0
-        ? (
-          <p>There is nothing to recommend!</p>
-        )
-        : (
-          <Row>
-            {morelikethis.map((prod) => (
-              <Col key={prod.id} lg={2} className="mb-4">
-                <Product product={prod} />
-              </Col>
-            ))}
-          </Row>
-        )}
+      <h4>More like this</h4>
+      {morelikethis.length === 0 ? (
+        <p>There is nothing to recommend!</p>
+      ) : (
+        <Row>
+          {morelikethis.map((prod) => (
+            <Col key={prod.id} lg={2} className="mb-4">
+              <Product product={prod} />
+            </Col>
+          ))}
+        </Row>
+      )}
     </div>
   );
 }

@@ -35,20 +35,18 @@ async function getProducts(req, res) {
     .take(perPage)
     .all();
 
-  return res
-    .status(200)
-    .send({
-      data: result,
-      totalResults: stats.totalResults,
-      stores: storeFacetValues.store.values,
-      categories: categoryFacetValues.category.values,
-    });
+  return res.status(200).send({
+    data: result,
+    totalResults: stats.totalResults,
+    stores: storeFacetValues.store.values,
+    categories: categoryFacetValues.category.values,
+  });
 }
 
 async function getProduct(req, res) {
-  const { id } = req.params;
+  const { storeName, sid } = req.params;
   const session = store.openSession();
-  const result = await session.load(id);
+  const result = await session.load(`products/${storeName}/${sid}`);
   if (result === null) return res.status(404).send(`Product ${id} not found.`);
   return res.status(200).send(result);
 }
@@ -86,7 +84,7 @@ async function searchProducts(req, res) {
     category.forEach((store) => {
       categoryAux += `"${store}", `;
     });
-    categoryAux = categoryAux.substring(0, categoryAux.length - 2) + ')';
+    categoryAux = categoryAux.substring(0, categoryAux.length - 2) + ")";
     if (alreadyCond) query += "and ";
     else query += "where ";
     query += `category all in ${categoryAux}\n`;
@@ -96,14 +94,18 @@ async function searchProducts(req, res) {
   if (rating) {
     if (alreadyCond) query += "and ";
     else query += "where ";
-    query += `rating between ${Number(rating[0]).toFixed(1)} and ${Number(rating[1]).toFixed(1)}\n`;
+    query += `rating between ${Number(rating[0]).toFixed(1)} and ${Number(
+      rating[1]
+    ).toFixed(1)}\n`;
     alreadyCond = true;
   }
 
   if (price) {
     if (alreadyCond) query += "and ";
     else query += "where ";
-    query += `price between ${Number(price[0]).toFixed(2)} and ${Number(price[1]).toFixed(2)}\n`;
+    query += `price between ${Number(price[0]).toFixed(2)} and ${Number(
+      price[1]
+    ).toFixed(2)}\n`;
     alreadyCond = true;
   }
 
@@ -112,7 +114,7 @@ async function searchProducts(req, res) {
     stores.forEach((store) => {
       storesAux += `"${store}", `;
     });
-    storesAux = storesAux.substring(0, storesAux.length - 2) + ')';
+    storesAux = storesAux.substring(0, storesAux.length - 2) + ")";
     if (alreadyCond) query += "and ";
     else query += "where ";
     query += `store in ${storesAux}\n`;
@@ -129,15 +131,46 @@ async function searchProducts(req, res) {
   const facet = await session.advanced.rawQuery(query).executeAggregation();
 
   query = query.replace("select facet(store)", "select facet(category)");
-  const categoryFacet = await session.advanced.rawQuery(query).executeAggregation();
-  
+  const categoryFacet = await session.advanced
+    .rawQuery(query)
+    .executeAggregation();
+
   return res
     .status(200)
-    .send({ data: result, totalResults: stats.totalResults, stores: facet.store.values, categories: categoryFacet.category.values });
+    .send({
+      data: result,
+      totalResults: stats.totalResults,
+      stores: facet.store.values,
+      categories: categoryFacet.category.values,
+    });
+}
+
+async function getMoreLikeThis(req, res) {
+  const { storeName, sid } = req.params;
+
+  const options = {
+    fields: ["category"],
+  };
+
+  const session = store.openSession();
+  const result = await session
+    .query({ indexName: "products/morelikethis" })
+    .moreLikeThis((builder) =>
+      builder
+        .usingDocument((x) =>
+          x.whereEquals("id()", `products/${storeName}/${sid}`)
+        )
+        .withOptions(options)
+    )
+    .take(6)
+    .all();
+
+  return res.status(200).send(result);
 }
 
 module.exports = {
   getProducts,
   getProduct,
   searchProducts,
+  getMoreLikeThis,
 };
