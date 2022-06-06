@@ -29,6 +29,11 @@ curl 'http://localhost:8080/databases/nolx/indexes' \
   --data-raw '{"Indexes":[{"Name":"products/morelikethis","Maps":["map(\"Products\", (product) => {\r\n    return {\r\n        category: product.category\r\n    };\r\n})"],"Type":"Map","SourceType":"Documents","LockMode":"Unlock","Priority":"Normal","DeploymentMode":null,"Configuration":{},"Fields":{"category":{"Analyzer":null,"Indexing":null,"Storage":"Yes","Suggestions":null,"TermVector":"WithPositionsAndOffsets"}},"OutputReduceToCollection":null,"PatternForOutputReduceToCollectionReferences":null,"PatternReferencesCollectionName":null,"AdditionalSources":null,"AdditionalAssemblies":[]}]}' \
   --compressed > /dev/null
 
+curl 'http://localhost:8080/databases/nolx/indexes' \
+  -X 'PUT' \
+  --data-raw '{"Indexes":[{"Name":"clients/suggest","Maps":["map(\"Clients\", (client) => {\r\n    return {\r\n        username: client.username,\r\n    };\r\n\r\n})"],"Type":"Map","SourceType":"Documents","LockMode":"Unlock","Priority":"Normal","DeploymentMode":null,"Configuration":{},"Fields":{"username":{"Analyzer":null,"Indexing":"Search","Storage":null,"Suggestions":true,"TermVector":null}},"OutputReduceToCollection":null,"PatternForOutputReduceToCollectionReferences":null,"PatternReferencesCollectionName":null,"AdditionalSources":null,"AdditionalAssemblies":[]}]}' \
+  --compressed > /dev/null
+
 echo "Uploading data..."
 
 cd upload
