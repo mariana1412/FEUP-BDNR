@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React, { useState } from 'react';
 import { Autocomplete, Slider, TextField } from '@mui/material';
+import { Form } from 'react-bootstrap';
 
 export default function FilterBox({
   title, filterType, options, step, filters, setFilters,
@@ -11,10 +12,6 @@ export default function FilterBox({
   function valuetext(value) {
     return value;
   }
-
-  const handleChange = (value) => {
-    setFilters(title, value);
-  };
 
   return (
     <div className="filter-box">
@@ -31,7 +28,7 @@ export default function FilterBox({
           step={step}
           valueLabelDisplay="auto"
           marks={options}
-          onChangeCommitted={(event, value) => handleChange(value)}
+          onChangeCommitted={(event, value) => setFilters(title, value)}
         />
         )}
         {filterType === 'autocomplete' && (
@@ -40,7 +37,7 @@ export default function FilterBox({
           id="search-autocomplete"
           size="small"
           value={filters}
-          onChange={(event, value) => handleChange(value)}
+          onChange={(event, value) => setFilters(title, value)}
           options={options.sort((a, b) => -b.charAt(0).localeCompare(a.charAt(0)))}
           groupBy={(option) => option.charAt(0)}
           limitTags={3}
@@ -52,6 +49,25 @@ export default function FilterBox({
             />
           )}
         />
+        )}
+        {filterType === 'checkbox' && (
+        <Form.Group>
+          {options.map((option) => (
+            <Form.Check
+              key={option.value}
+              type="checkbox"
+              label={`${option.value} (${option.count})`}
+              checked={filters.includes(option.value)}
+              onChange={(event) => {
+                if (event.target.checked) {
+                  setFilters('stores', [...filters, option.value]);
+                } else {
+                  setFilters('stores', filters.filter((item) => item !== option.value));
+                }
+              }} // eslint-disable-line  react/jsx-no-bind
+            />
+          ))}
+        </Form.Group>
         )}
       </div>
     </div>
